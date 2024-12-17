@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #playButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            background-color: #ff0000;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Responsive design for button */
+        @media (max-width: 768px) {
+            #playButton {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="playButton">Play Movie</button>
+    <div id="scene"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe-ar.min.js"></script>
+
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Cinema environment
+        const floorGeometry = new THREE.PlaneGeometry(10, 10);
+        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
+
+        const screenGeometry = new THREE.PlaneGeometry(4, 2);
+        const screenMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+        screen.position.set(0, 1, -5);
+        scene.add(screen);
+
+        // Seats
+        const seatGeometry = new THREE.BoxGeometry(0.5, 0.2, 0.5);
+        const seatMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const seats = [];
+
+        for (let i = -2; i <= 2; i += 1) {
+            for (let j = -1; j >= -2; j -= 1) {
+                const seat = new THREE.Mesh(seatGeometry, seatMaterial.clone());
+                seat.position.set(i, 0.1, j - 4);
+                seat.userData = { originalPosition: seat.position.clone(), clicked: false };
+                scene.add(seat);
+                seats.push(seat);
+            }
+        }
+
+        // Light
+        const light = new THREE.AmbientLight(0x404040, 2);
+        scene.add(light);
+
+        // Camera position
+        camera.position.set(0, 1, 2);
+        camera.lookAt(0, 1, -5);
+
+        // Seat click animation
+        window.addEventListener('click', (event) => {
+            const mouse = new THREE.Vector2(
+                (event.clientX / window.innerWidth) * 2 - 1,
+                -(event.clientY / window.innerHeight) * 2 + 1
+            );
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(seats);
+            if (intersects.length > 0) {
+                const seat = intersects[0].object;
+                if (!seat.userData.clicked) {
+                    seat.material.color.set(0x00ff00); // Change to green
+                    seat.position.z += 0.2; // Move forward
+                    seat.userData.clicked = true;
+                } else {
+                    seat.material.color.set(0xff0000); // Reset to red
+                    seat.position.copy(seat.userData.originalPosition); // Move back
+                    seat.userData.clicked = false;
+                }
+            }
+        });
+
+        // Play button functionality
+        const playButton = document.getElementById("playButton");
+        playButton.addEventListener("click", () => {
+            const movieTexture = new THREE.VideoTexture(
+                document.createElement("video")
+            );
+            const video = movieTexture.image;
+            video.src =
+                "https://drive.google.com/uc?export=view&id=1hGcMy61ERESxK4_2lZNfBDQH1J6QqOFY";
+            video.crossOrigin = "anonymous";
+            video.loop = true;
+            video.play();
+
+            screen.material.map = movieTexture;
+            screen.material.needsUpdate = true;
+
+            playButton.style.display = "none"; // Hide the button
+        });
+
+        // Render loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // Handle resizing
+        window.addEventListener("resize", () => {
+            const aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = aspect;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

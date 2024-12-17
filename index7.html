@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+    <!-- A-Frame Scene -->
+    <a-scene embedded arjs>
+        <!-- Define the AR Camera -->
+        <a-camera position="0 0 0" rotation="0 0 0" cursor="fuse: true; maxDistance: 10;" 
+                  look-controls="enabled: true; pointerLockEnabled: true">
+        </a-camera>
+
+        <!-- Virtual Cinema Screen -->
+        <a-plane position="0 1.5 -3" width="4" height="2.25" color="#000" 
+                 material="shader: html; target: #video-frame;">
+        </a-plane>
+
+        <!-- Video Source -->
+        <a-entity id="video-frame" geometry="primitive: plane; width: 4; height: 2.25;"
+                  material="shader: html; target: #video-content;">
+        </a-entity>
+
+    </a-scene>
+
+    <!-- Video Content -->
+    <div id="video-content" style="display:none;">
+        <iframe width="100%" height="100%" src="https://zerocostfreedom.github.io/ZeroCostFreedomNonAds/Merlin01_dklj.html" 
+                frameborder="0" allow="autoplay; fullscreen"></iframe>
+    </div>
+
+</body>
+</html>

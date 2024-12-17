@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        /* Allow zooming the whole page */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Create a zoomable container for the AR scene */
+        .zoom-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+            transition: transform 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Zoom Controls -->
+    <div style="position: absolute; top: 10px; left: 10px;">
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+    </div>
+
+    <!-- Zoomable AR Cinema Scene Container -->
+    <div class="zoom-container" id="zoom-container">
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;" 
+                  loaded="window.open('https://zerocostfreedom.github.io/ZeroCostFreedomNonAds/Merlin01_dklj.html', '_blank');">
+            <!-- Camera -->
+            <a-camera position="0 0 0" rotation="0 0 0" cursor="fuse: true; maxDistance: 10;" 
+                      look-controls="enabled: true; pointerLockEnabled: true">
+            </a-camera>
+
+            <!-- Virtual Cinema Screen -->
+            <a-plane position="0 1.5 -3" width="4" height="2.25" color="#000">
+                <!-- Movie Poster -->
+                <a-image src="https://github.com/ZeroCostFreedom/AR-Cinema/blob/main/merlin.jpg?raw=true" width="4" height="2.25" 
+                         position="0 0 0" scale="1 1 1">
+                </a-image>
+            </a-plane>
+        </a-scene>
+    </div>
+
+    <script>
+        // Variables to handle zoom levels
+        let zoomLevel = 1;
+
+        // Function to zoom in
+        function zoomIn() {
+            zoomLevel += 0.1;
+            updateZoom();
+        }
+
+        // Function to zoom out
+        function zoomOut() {
+            zoomLevel -= 0.1;
+            if (zoomLevel < 0.1) zoomLevel = 0.1; // Prevent zooming out too much
+            updateZoom();
+        }
+
+        // Update zoom transform
+        function updateZoom() {
+            const zoomContainer = document.getElementById('zoom-container');
+            zoomContainer.style.transform = `scale(${zoomLevel})`;
+        }
+    </script>
+
+</body>
+</html>

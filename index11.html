@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .zoom-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Style for buttons */
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Zoom Controls -->
+    <div>
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+    </div>
+
+    <!-- Zoomable AR Cinema Scene Container -->
+    <div class="zoom-container" id="zoom-container">
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;" 
+                  flashlight="enabled: true;">
+            
+            <!-- Camera with flashlight auto-on in dark environments -->
+            <a-camera position="0 0 0" rotation="0 0 0" cursor="fuse: true; maxDistance: 10;" 
+                      look-controls="enabled: true; pointerLockEnabled: true">
+            </a-camera>
+
+            <!-- Virtual Cinema Screen -->
+            <a-plane position="0 1.5 -3" width="4" height="2.25" color="#000">
+                <!-- Embed the movie webpage as a texture using iframe -->
+                <a-entity geometry="primitive: plane; width: 4; height: 2.25;"
+                          material="shader: html; target: #movieIframe"></a-entity>
+            </a-plane>
+        </a-scene>
+    </div>
+
+    <!-- Iframe to display movie -->
+    <iframe id="movieIframe" src="https://zerocostfreedom.github.io/ZeroCostFreedomNonAds/Merlin01_dklj.html" 
+            width="400" height="225" style="display:none;"></iframe>
+
+    <script>
+        let zoomLevel = 1;
+
+        function zoomIn() {
+            zoomLevel += 0.1;
+            updateZoom();
+        }
+
+        function zoomOut() {
+            zoomLevel -= 0.1;
+            if (zoomLevel < 0.1) zoomLevel = 0.1;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const zoomContainer = document.getElementById('zoom-container');
+            zoomContainer.style.transform = `scale(${zoomLevel})`;
+        }
+    </script>
+
+</body>
+</html>

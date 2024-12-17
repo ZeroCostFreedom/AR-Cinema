@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe-ar.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #playButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            background-color: #ff0000;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Responsive design for button */
+        @media (max-width: 768px) {
+            #playButton {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="playButton">Play Movie</button>
+
+    <!-- AR Scene -->
+    <a-scene embedded arjs>
+        <!-- Camera -->
+        <a-camera position="0 1.6 0" look-controls>
+        </a-camera>
+
+        <!-- Virtual Cinema Screen -->
+        <a-plane id="screen" position="0 1.5 -3" width="2.5" height="1.4" color="#000000"></a-plane>
+
+        <!-- Seats -->
+        <a-box position="-0.8 0 -2" depth="0.4" height="0.2" width="0.6" color="red" class="seat"></a-box>
+        <a-box position="0 0 -2" depth="0.4" height="0.2" width="0.6" color="red" class="seat"></a-box>
+        <a-box position="0.8 0 -2" depth="0.4" height="0.2" width="0.6" color="red" class="seat"></a-box>
+    </a-scene>
+
+    <script>
+        // Play Button Functionality
+        const playButton = document.getElementById("playButton");
+        playButton.addEventListener("click", () => {
+            // Load video for AR display
+            const screen = document.querySelector("#screen");
+            const videoUrl = "https://drive.google.com/uc?export=view&id=1hGcMy61ERESxK4_2lZNfBDQH1J6QqOFY";
+
+            const videoElement = document.createElement("video");
+            videoElement.setAttribute("src", videoUrl);
+            videoElement.setAttribute("loop", "true");
+            videoElement.setAttribute("playsinline", "true");
+            videoElement.setAttribute("autoplay", "true");
+            videoElement.setAttribute("crossorigin", "anonymous");
+
+            videoElement.addEventListener("loadeddata", () => {
+                const videoTexture = new THREE.VideoTexture(videoElement);
+                screen.setAttribute("material", "src", videoTexture);
+            });
+
+            videoElement.play();
+            playButton.style.display = "none"; // Hide play button
+        });
+
+        // Seat Interaction (Change Color)
+        document.querySelectorAll(".seat").forEach((seat) => {
+            seat.addEventListener("click", () => {
+                const currentColor = seat.getAttribute("color");
+                seat.setAttribute("color", currentColor === "red" ? "green" : "red");
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Cinema</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+    <!-- A-Frame Scene -->
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;" 
+              loaded="window.open('https://zerocostfreedom.github.io/ZeroCostFreedomNonAds/Merlin01_dklj.html', '_blank');">
+        <!-- Camera -->
+        <a-camera position="0 0 0" rotation="0 0 0" cursor="fuse: true; maxDistance: 10;" 
+                  look-controls="enabled: true; pointerLockEnabled: true">
+        </a-camera>
+
+        <!-- Virtual Cinema Screen -->
+        <a-plane position="0 1.5 -3" width="4" height="2.25" color="#000">
+            <!-- Movie Poster -->
+            <a-image src="https://github.com/ZeroCostFreedom/AR-Cinema/blob/main/merlin.jpg?raw=true" width="4" height="2.25" 
+                     position="0 0 0" scale="1 1 1">
+            </a-image>
+        </a-plane>
+    </a-scene>
+
+</body>
+</html>
